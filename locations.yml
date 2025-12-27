@@ -1,0 +1,10 @@
+- { name: Paris, longitude: 2.2945, latitude: 48.8584, height: 35.0 }
+- { name: Toulouse, longitude: 1.4808, latitude: 43.5606, height: 146.0 }
+- { name: StMichel, longitude: -1.5115, latitude: 48.6360, height: 52.0 }
+- { name: Nice, longitude: 7.2148, latitude: 43.6598, height: 4.0 }
+- { name: Marseille, longitude: 5.3560, latitude: 43.3390, height: 5.0 }
+- { name: Berlin, longitude: 13.3777, latitude: 52.5163, height: 34.0 }
+- { name: Darmstadt, longitude: 8.6225, latitude: 49.8708, height: 144.0 }
+- { name: Munich, longitude: 11.7861, latitude: 48.3537, height: 453.0 }
+- { name: Hamburg, longitude: 9.9400, latitude: 53.5430, height: 10.0 }
+- { name: Zugspitze, longitude: 10.9850, latitude: 47.4210, height: 2962.0 }
