@@ -5,7 +5,27 @@ import time
 import argparse  # 引入参数解析库
 
 from fgga import GGA,get_random_displacement_components,get_new_coordinates
+import threading
 
+
+
+def stdin_reader_thread():
+    """后台线程：负责从标准输入读取二进制数据"""
+    try:
+        # 获取二进制读取器
+        reader = sys.stdin.buffer
+        while True:
+            # 读取数据块（例如最大 1024 字节）
+            # 注意：read 会阻塞直到有数据
+            data = reader.read(1024)
+            
+            if not data:
+                # 如果读取不到数据，说明管道已关闭
+                break
+            # process data??
+
+    except Exception as e:
+        print(f"\n[Thread Error] {e}", file=sys.stderr)
 
 class LocationManager:
     def __init__(self, yaml_content):
@@ -109,6 +129,9 @@ if __name__ == "__main__":
     n_lon = lon
     n_lat = lat
     g = GGA()
+
+    reader_t = threading.Thread(target=stdin_reader_thread, daemon=True)
+    reader_t.start()
     try:
         while True:
             # 更新坐标

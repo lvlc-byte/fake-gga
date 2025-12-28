@@ -23,3 +23,7 @@ Create single executable binary：
 pyinstaller -F --name gga main.py
 ```
 
+Simulate GPS devices
+```bash
+socat  PTY,link=/tmp/ttyV0,raw,echo=0 EXEC:"gga paris -t 10 -s 0.5"
+```
