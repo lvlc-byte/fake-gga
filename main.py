@@ -2,50 +2,49 @@ import yaml
 import sys
 import os
 import time
+import argparse  # 引入参数解析库
 
 from fgga import GGA,get_random_displacement_components,get_new_coordinates
 
-# 为了方便演示，这里直接将YAML内容作为字符串放入代码中
-# 在实际应用中，你通常会使用 open('config.yaml', 'r') 来读取文件
-yaml_data = """
-- { name: Paris, longitude: 2.2945, latitude: 48.8584, height: 35.0 }
-- { name: Toulouse, longitude: 1.4808, latitude: 43.5606, height: 146.0 }
-- { name: StMichel, longitude: -1.5115, latitude: 48.6360, height: 52.0 }
-- { name: Nice, longitude: 7.2148, latitude: 43.6598, height: 4.0 }
-- { name: Marseille, longitude: 5.3560, latitude: 43.3390, height: 5.0 }
-- { name: Berlin, longitude: 13.3777, latitude: 52.5163, height: 34.0 }
-- { name: Darmstadt, longitude: 8.6225, latitude: 49.8708, height: 144.0 }
-- { name: Munich, longitude: 11.7861, latitude: 48.3537, height: 453.0 }
-- { name: Hamburg, longitude: 9.9400, latitude: 53.5430, height: 10.0 }
-- { name: Zugspitze, longitude: 10.9850, latitude: 47.4210, height: 2962.0 }
-"""
 
 class LocationManager:
     def __init__(self, yaml_content):
-        """初始化管理器，解析YAML并建立查找表"""
         try:
             # 加载 YAML 数据
             self.raw_list = yaml.safe_load(yaml_content)
-            
-            # 将列表转换为字典，key为 name，方便快速查找
-            # 格式: {'Paris': {'name': 'Paris', 'longitude': ...}, ...}
-            self.locations = {item['name']: item for item in self.raw_list}
+            if self.raw_list is None:
+                self.raw_list = []
+
+            self.locations = {}
+            for item in self.raw_list:
+                if 'name' in item:
+                    key = str(item['name']).lower()
+                    self.locations[key] = item
             
         except yaml.YAMLError as exc:
+            print(f"YAML 解析错误: {exc}")
+            self.locations = {}
+        except Exception as e:
+            print(f"加载错误: {e}")
             self.locations = {}
 
     def list_locations(self):
-        """列出所有可用的地点名称"""
-        return list(self.locations.keys())
+        """列出所有可用的地点名称 (返回原始大小写名称)"""
+        return [data['name'] for data in self.locations.values()]
 
     def get_location_info(self, name):
-        """根据名称获取经纬度和高度"""
-        if name in self.locations:
-            data = self.locations[name]
+        """根据名称获取经纬度和高度 (忽略大小写)"""
+        if name is None:
+            return None
+            
+        key = str(name).lower()
+        
+        if key in self.locations:
+            data = self.locations[key]
             return {
                 "lon": data['longitude'],
                 "lat": data['latitude'],
-                "h": data['height']
+                "h": data.get('height',1.0)
             }
         else:
             return None
@@ -53,40 +52,79 @@ class LocationManager:
 # --- 主程序逻辑 ---
 
 if __name__ == "__main__":
+    # 定义命令行参数
+    parser = argparse.ArgumentParser(description="GNSS GGA 模拟生成器")
+    
+    # 位置参数：location name (设为可选，因为 -l 模式下不需要)
+    parser.add_argument("location_name", nargs="?", help="目标地点名称 (如 Paris)")
+    
+    # 可选参数
+    parser.add_argument("-l", "--list", action="store_true", help="列出所有可用的 location name 并退出")
+    parser.add_argument("-c", "--config", default="locations.yml", help="Location 配置文件路径 (默认: locations.yml)")
+    parser.add_argument("-t", "--interval", type=float, default=1.0, help="输出/Sleep 间隔时间，单位秒 (默认: 1.0)")
+    parser.add_argument("-s", "--speed", type=float, default=1.0, help="移动速度，单位 m/s (默认: 1.0)")
+
+    args = parser.parse_args()
     # 1. 初始化管理器
     try:
         with open("locations.yml", "r", encoding="utf-8") as f:
             file_content = f.read()
             manager = LocationManager(file_content)
-            # 后续逻辑同上...
     except FileNotFoundError:
         print("错误：找不到 locations.yaml 文件")
-
-        # 2. 列出所有地点
-        print("\n--- 可用地点列表 ---")
-        all_names = manager.list_locations()
-        print(", ".join(all_names))
-        print("-" * 30)
-
-            
-    # 4. 模拟 GNSS 应用中的坐标提取
-    location_data = manager.get_location_info("Paris")
-    if not location_data:
         sys.exit(1)
-        # 这里模拟传给 GNSS 算法的变量
+
+    
+    if args.list:
+        locations = manager.list_locations()
+        print("可用的地点:")
+        for loc in locations:
+            print(f" - {loc}")
+        sys.exit(0)
+
+    # 3. 校验位置参数 (如果不是 -l 模式，则必须提供 location_name)
+    if not args.location_name:
+        parser.error("必须指定 location name，或者使用 -l 查看可用列表。")
+
+    # 4. 获取坐标信息
+    location_data = manager.get_location_info(args.location_name)
+    if not location_data:
+        print(f"错误：地点 '{args.location_name}' 在配置文件中不存在。")
+        sys.exit(1)
+
     lat = location_data['lat']
     lon = location_data['lon']
     h = location_data['h']
-    gnss_input = (lat, lon, h)
-    #print(f"发送到接收机算法的元组: {gnss_input}")
+    
+    # print(f"初始坐标: Lat={lat}, Lon={lon}, Height={h}")
 
-    dx,dy = get_random_displacement_components(1)
+    # 计算每一步的位移距离
+    # 距离 (m) = 速度 (m/s) * 时间间隔 (s)
+    step_distance = args.speed * args.interval
+    
+    # 获取位移分量 (根据原来的逻辑，这里生成一次方向后保持匀速直线运动)
+    # 如果希望随机漫步，应将此行放入 while 循环内
+    dx, dy = get_random_displacement_components(step_distance)
+    
     n_lon = lon
     n_lat = lat
     g = GGA()
-    while True:
-        n_lon, n_lat = get_new_coordinates(n_lon, n_lat, dx, dy)
-        g.lat = n_lat
-        g.lon = n_lon
-        print(g)
-        time.sleep(1)
+    try:
+        while True:
+            # 更新坐标
+            n_lon, n_lat = get_new_coordinates(n_lon, n_lat, dx, dy)
+            
+            g.lat = n_lat
+            g.lon = n_lon
+            # 注意：如果 GGA 类支持高度设置，建议也加上 g.h = h
+            
+            # 输出到 stdout 并flush
+            sys.stdout.write(str(g))
+            sys.stdout.write("\r\n")
+            sys.stdout.flush()
+            
+            # 休眠指定间隔
+            time.sleep(args.interval)
+            
+    except KeyboardInterrupt:
+        sys.exit(0)

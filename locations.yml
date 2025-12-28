@@ -6,5 +6,5 @@
 - { name: Berlin, longitude: 13.3777, latitude: 52.5163, height: 34.0 }
 - { name: Darmstadt, longitude: 8.6225, latitude: 49.8708, height: 144.0 }
 - { name: Munich, longitude: 11.7861, latitude: 48.3537, height: 453.0 }
-- { name: Hamburg, longitude: 9.9400, latitude: 53.5430, height: 10.0 }
+- { name: Hamburg, longitude: 9.9400, latitude: 53.5430 }
 - { name: Zugspitze, longitude: 10.9850, latitude: 47.4210, height: 2962.0 }
