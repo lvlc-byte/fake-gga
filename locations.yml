@@ -8,3 +8,17 @@
 - { name: Munich, longitude: 11.7861, latitude: 48.3537, height: 453.0 }
 - { name: Hamburg, longitude: 9.9400, latitude: 53.5430 }
 - { name: Zugspitze, longitude: 10.9850, latitude: 47.4210, height: 2962.0 }
+- { name: Fontainebleau, longitude:  2.6809386, latitude: 48.428322, height: 100.0 }
+- { name: London, longitude: -0.1276, latitude: 51.5074, height: 11.0 }
+- { name: NewYork, longitude: -74.0060, latitude: 40.7128, height: 10.0 }
+- { name: SanFrancisco, longitude: -122.4194, latitude: 37.7749, height: 16.0 }
+- { name: Tokyo, longitude: 139.6917, latitude: 35.6895, height: 40.0 }
+- { name: LosAngeles, longitude: -118.2437, latitude: 34.0522, height: 71.0 }
+- { name: LasVegas, longitude: -115.1398, latitude: 36.1699, height: 610.0 }
+- { name: SanJose, longitude: -121.8863, latitude: 37.3382, height: 26.0 }
+- { name: Columbus, longitude: -82.9988, latitude: 39.9612, height: 275.0 }
+- { name: Miami, longitude: -80.1918, latitude: 25.7617, height: 2.0 }
+- { name: Sydeney, longitude: 151.2093, latitude: -33.8688, height: 58.0 }
+- { name: Brisbane, longitude: 153.0251, latitude: -27.4698, height: 27.0 }
+- { name: Armidale, longitude: 151.6636, latitude: -30.5016, height: 980.0 }
+- { name: Wellington, longitude: 174.7762, latitude: -41.2865, height: 20.0 }
