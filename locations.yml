@@ -22,3 +22,9 @@
 - { name: Brisbane, longitude: 153.0251, latitude: -27.4698, height: 27.0 }
 - { name: Armidale, longitude: 151.6636, latitude: -30.5016, height: 980.0 }
 - { name: Wellington, longitude: 174.7762, latitude: -41.2865, height: 20.0 }
+- { name: Curitiba, longitude: -49.2643, latitude: -25.4297, height: 934.0 }
+- { name: Cangzhou, longitude: 116.8286, latitude: 38.3106, height: 13.0 }
+- { name: Hangzhou, longitude: 120.1551, latitude: 30.2741, height: 7.0 }
+- { name: guangzhou, longitude: 113.2644, latitude: 23.1291, height: 21.0 }
+- { name: suzhou, longitude: 120.5853, latitude: 31.2989, height: 10.0 }
+- { name: changzhou, longitude: 119.9730, latitude: 31.8107, height: 12.0 }
